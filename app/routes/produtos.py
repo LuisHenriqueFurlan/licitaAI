@@ -8,6 +8,27 @@ from app.services.produto_service import (
     criar_produto,
     listar_produtos
 )
+from app.schemas.produto_schema import (
+    ProdutoCreate,
+    CompararProduto
+)
+
+from app.services.produto_service import (
+    criar_produto,
+    listar_produtos,
+    comparar_produtos
+)
+
+from app.schemas.comparacao_schema import (
+    ComparacaoRequest
+)
+
+from app.services.produto_service import (
+    criar_produto,
+    listar_produtos,
+    comparar_produtos,
+    comparar_requisitos
+)
 
 router = APIRouter()
 
@@ -32,4 +53,27 @@ def buscar_produtos(
 
     return listar_produtos(
         db
+    )
+
+@router.post("/comparar")
+def comparar(
+    dados: CompararProduto,
+    db: Session = Depends(get_db)
+):
+
+    return comparar_produtos(
+        db,
+        dados.preco_maximo
+    )
+
+@router.post("/comparar-requisitos")
+def comparar_por_requisitos(
+    dados: ComparacaoRequest,
+    db: Session = Depends(get_db)
+):
+
+    return comparar_requisitos(
+        db,
+        dados.preco_maximo,
+        dados.requisitos
     )
