@@ -13,6 +13,14 @@ from app.routes.comparacao import (
     router as comparacao_router
 )
 from fastapi.middleware.cors import CORSMiddleware
+from app.routes.comprasgov import (
+    router as comprasgov_router
+)
+from app.routes.atualizacao import (
+    router as atualizacao_router
+)
+
+
 
 app = FastAPI()
 
@@ -24,6 +32,10 @@ app.include_router(produtos_router)
 app.include_router(atributos_router)
 app.include_router(busca_router)
 app.include_router(comparacao_router)
+app.include_router(comprasgov_router)
+app.include_router(atualizacao_router)
+
+
 
 app.add_middleware(
     CORSMiddleware,
