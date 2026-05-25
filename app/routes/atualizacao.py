@@ -4,9 +4,9 @@ from app.services.comprasgov_service import (
     buscar_pregoes
 )
 
-from app.services.cache_service import (
-    salvar_pregoes,
-    obter_pregoes
+from app.services.database_service import (
+    salvar_pregao,
+    listar_pregoes
 )
 
 router = APIRouter()
@@ -19,27 +19,36 @@ def atualizar():
 
     dados = buscar_pregoes()
 
-    salvar_pregoes(
-        dados
-    )
+
+    for pregao in dados.get(
+        "pregoes",
+        []
+    ):
+
+        salvar_pregao(
+            pregao
+        )
+
 
     return {
 
         "mensagem":
-        "Pregões atualizados",
+        "Pregões salvos",
 
         "total":
-        dados.get(
-            "total_pregoes",
-            0
+        len(
+            dados.get(
+                "pregoes",
+                []
+            )
         )
 
     }
 
 
 @router.get(
-    "/cache-pregoes"
+    "/historico-pregoes"
 )
-def listar():
+def historico():
 
-    return obter_pregoes()
+    return listar_pregoes()

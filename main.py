@@ -19,10 +19,15 @@ from app.routes.comprasgov import (
 from app.routes.atualizacao import (
     router as atualizacao_router
 )
+from app.database.database import (
+    criar_tabela
+)
 
 
 
 app = FastAPI()
+
+criar_tabela()
 
 
 app.include_router(router)
