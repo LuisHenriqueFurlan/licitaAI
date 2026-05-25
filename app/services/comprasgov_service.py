@@ -1,4 +1,5 @@
 import requests
+
 from collections import defaultdict
 
 from app.services.classificador_service import (
@@ -17,6 +18,19 @@ from app.services.oportunidade_service import (
     calcular_oportunidade
 )
 
+from app.services.preco_service import (
+    buscar_menor_preco
+)
+
+from app.services.recomendacao_service import (
+    gerar_recomendacao
+)
+
+from app.services.database_service import (
+    salvar_pregao
+)
+
+
 
 def buscar_pregoes():
 
@@ -26,6 +40,7 @@ def buscar_pregoes():
             "https://dadosabertos.compras.gov.br/"
             "modulo-legado/4_consultarItensPregoes"
         )
+
 
         params = {
 
@@ -37,30 +52,89 @@ def buscar_pregoes():
 
         }
 
+
         resposta = requests.get(
+
             url,
+
             params=params,
+
             timeout=30
+
         )
 
-        print(
-            "STATUS:",
-            resposta.status_code
-        )
 
         dados = resposta.json()
 
-        pregoes = defaultdict(list)
+
+        pregoes = defaultdict(
+            list
+        )
 
 
         for item in dados.get(
+
             "resultado",
+
             []
+
         ):
 
             pregao_id = item.get(
                 "idCompra"
             )
+
+
+            produto = item.get(
+                "descricaoItem"
+            )
+
+
+            mercado = buscar_menor_preco(
+                produto
+            )
+
+
+            valor_governo = float(
+
+                item.get(
+                    "valorEstimadoItem",
+                    0
+                )
+
+            )
+
+
+            menor_preco = (
+
+                mercado.get(
+                    "menor_preco",
+                    {}
+                )
+
+                .get(
+                    "preco",
+                    0
+                )
+
+            )
+
+
+            economia = round(
+
+                valor_governo
+                -
+                menor_preco,
+
+                2
+
+            )
+
+
+            recomendacao = gerar_recomendacao(
+                economia
+            )
+
 
             pregoes[pregao_id].append({
 
@@ -70,9 +144,7 @@ def buscar_pregoes():
                     ),
 
                 "produto":
-                    item.get(
-                        "descricaoItem"
-                    ),
+                    produto,
 
                 "descricao":
                     item.get(
@@ -84,17 +156,20 @@ def buscar_pregoes():
                         "quantidadeItem"
                     ),
 
-                "valor_estimado":
-                    item.get(
-                        "valorEstimadoItem"
-                    ),
+                "valor_governo":
+                    valor_governo,
 
-                "fornecedor":
-                    item.get(
-                        "fornecedorVencedor"
-                    )
+                "mercado":
+                    mercado,
+
+                "economia":
+                    economia,
+
+                "recomendacao":
+                    recomendacao
 
             })
+
 
 
         resultado = []
@@ -106,19 +181,29 @@ def buscar_pregoes():
                 itens
             )
 
+
             score = calcular_score(
+
                 itens,
+
                 categoria
+
             )
 
+
             resumo = gerar_resumo(
+
                 itens,
+
                 categoria
+
             )
+
 
             oportunidade = calcular_oportunidade(
                 itens
             )
+
 
             prioridade = (
 
@@ -137,6 +222,40 @@ def buscar_pregoes():
                 "Baixa"
 
             )
+
+
+            if oportunidade == "Alta":
+
+                try:
+
+                    salvar_pregao({
+
+                        "pregao_id":
+                            pregao_id,
+
+                        "categoria":
+                            categoria,
+
+                        "score":
+                            score,
+
+                        "prioridade":
+                            prioridade,
+
+                        "oportunidade":
+                            oportunidade,
+
+                        "resumo":
+                            resumo
+
+                    })
+
+                except Exception as erro:
+
+                    print(
+                        "ERRO AO SALVAR:",
+                        erro
+                    )
 
 
             resultado.append({
@@ -194,11 +313,6 @@ def buscar_pregoes():
 
 
     except Exception as erro:
-
-        print(
-            "ERRO:",
-            erro
-        )
 
         return {
 

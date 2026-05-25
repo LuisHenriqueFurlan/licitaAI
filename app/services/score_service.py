@@ -1,48 +1,54 @@
 def calcular_score(itens, categoria):
 
-    score = 0
+    score = 50
 
 
-    score += len(itens) * 5
+    quantidade = len(itens)
+
+    if quantidade > 10:
+        score += 10
+
+    elif quantidade > 5:
+        score += 5
 
 
-    for item in itens:
-
-        try:
-
-            valor = float(
-                item.get(
-                    "valor_estimado",
-                    0
-                )
-            )
-
-            score += valor / 1000
-
-        except:
-
-            pass
+    economia_total = sum(
+        item.get(
+            "economia",
+            0
+        )
+        for item in itens
+    )
 
 
-    if categoria == "Tecnologia":
+    if economia_total > 5000:
 
         score += 30
 
-
-    elif categoria == "Hospitalar":
+    elif economia_total > 2000:
 
         score += 20
 
+    elif economia_total > 500:
 
-    elif categoria == "Automotivo":
+        score += 10
+
+
+    categorias_importantes = [
+
+        "Tecnologia",
+        "Automotivo",
+        "Saúde"
+
+    ]
+
+
+    if categoria in categorias_importantes:
 
         score += 15
 
 
-    score = min(
-        round(score),
+    return min(
+        score,
         100
     )
-
-
-    return score

@@ -1,30 +1,22 @@
 def calcular_oportunidade(itens):
 
-    total = 0
+    economia_total = sum(
 
-    for item in itens:
+        item.get(
+            "economia",
+            0
+        )
 
-        try:
+        for item in itens
 
-            valor = float(
-                item.get(
-                    "valor_estimado",
-                    0
-                )
-            )
-
-            total += valor
-
-        except:
-
-            pass
+    )
 
 
-    if total > 5000:
+    if economia_total > 5000:
 
         return "Alta"
 
-    elif total > 2000:
+    elif economia_total > 1000:
 
         return "Média"
 

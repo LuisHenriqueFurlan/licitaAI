@@ -11,7 +11,7 @@ def salvar_pregao(pregao):
 
     cursor.execute("""
 
-    INSERT OR IGNORE INTO pregoes(
+    INSERT OR REPLACE INTO pregoes(
 
         pregao_id,
         categoria,

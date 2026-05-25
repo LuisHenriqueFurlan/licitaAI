@@ -22,6 +22,12 @@ from app.routes.atualizacao import (
 from app.database.database import (
     criar_tabela
 )
+from app.routes.mercado import (
+    router as mercado_router
+)
+from app.routes.precos import (
+    router as preco_router
+)
 
 
 
@@ -39,7 +45,8 @@ app.include_router(busca_router)
 app.include_router(comparacao_router)
 app.include_router(comprasgov_router)
 app.include_router(atualizacao_router)
-
+app.include_router(mercado_router)
+app.include_router(preco_router)   
 
 
 app.add_middleware(
