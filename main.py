@@ -28,12 +28,21 @@ from app.routes.mercado import (
 from app.routes.precos import (
     router as preco_router
 )
-
-
+from app.routes.dashboard import (router as dashboard_router)
+from app.routes.pregao import (
+    router as pregao_router
+)
+from app.services.scheduler_service import (
+    iniciar_scheduler
+)
+from app.routes.edital_upload import (
+    router as edital_upload_router
+)
 
 app = FastAPI()
 
 criar_tabela()
+iniciar_scheduler()
 
 
 app.include_router(router)
@@ -46,7 +55,12 @@ app.include_router(comparacao_router)
 app.include_router(comprasgov_router)
 app.include_router(atualizacao_router)
 app.include_router(mercado_router)
-app.include_router(preco_router)   
+app.include_router(preco_router)  
+app.include_router(dashboard_router)
+app.include_router(pregao_router)
+app.include_router(edital_upload_router)
+
+
 
 
 app.add_middleware(

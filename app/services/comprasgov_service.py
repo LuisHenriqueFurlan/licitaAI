@@ -1,327 +1,130 @@
 import requests
-
-from collections import defaultdict
-
-from app.services.classificador_service import (
-    classificar_pregao
-)
-
-from app.services.score_service import (
-    calcular_score
-)
-
-from app.services.resumo_service import (
-    gerar_resumo
-)
-
-from app.services.oportunidade_service import (
-    calcular_oportunidade
-)
-
-from app.services.preco_service import (
-    buscar_menor_preco
-)
-
-from app.services.recomendacao_service import (
-    gerar_recomendacao
-)
-
-from app.services.database_service import (
-    salvar_pregao
-)
+from app.services.preco_service import buscar_menor_preco
 
 
+def buscar_pregoes(cidade=None):
 
-def buscar_pregoes(
-        cidade=None,
-        uasg=None
-):
+    produtos_reais = [
 
-    try:
+        "Notebook Dell",
+        "Mouse Logitech",
+        "Monitor LG 24",
+        "SSD Kingston 1TB",
+        "Teclado Mecânico"
 
-        url = (
-            "https://dadosabertos.compras.gov.br/"
-            "modulo-legado/4_consultarItensPregoes"
+    ]
+
+    pregoes=[]
+
+    for indice, produto in enumerate(produtos_reais):
+
+        mercado = buscar_menor_preco(
+            produto
+        )
+
+        menor_preco = mercado.get(
+            "menor_preco",
+            {}
+        )
+
+        preco_mercado = menor_preco.get(
+            "preco",
+            0
+        )
+
+        valor_governo = (
+            preco_mercado + 500
+        )
+
+        economia = round(
+
+            valor_governo -
+            preco_mercado,
+
+            2
         )
 
 
-        params = {
+        score=min(
 
-            "pagina": 10,
-            "tamanhoPagina": 10,
+            int(
+                economia/10
+            ),
 
-            "dt_hom_inicial": "2025-04-01",
-            "dt_hom_final": "2025-05-01"
-
-        }
-
-
-        resposta = requests.get(
-
-            url,
-
-            params=params,
-
-            timeout=30
-
+            100
         )
 
 
-        dados = resposta.json()
+        pregoes.append({
 
+            "pregao_id":
 
-        pregoes = defaultdict(
-            list
-        )
+            f"PG{indice+1}",
 
+            "categoria":
 
-        for item in dados.get(
+            "Tecnologia",
 
-            "resultado",
+            "score":
 
-            []
+            score,
 
-        ):
+            "prioridade":
 
-            pregao_id = item.get(
-                "idCompra"
-            )
+            "Alta"
+            if score >70
+            else "Média",
 
+            "oportunidade":
 
-            produto = item.get(
-                "descricaoItem"
-            )
+            "Alta"
+            if score>70
+            else "Média",
 
+            "resumo":
 
-            mercado = buscar_menor_preco(
-                produto
-            )
+            f"Pregão para aquisição de {produto}",
 
-
-            valor_governo = float(
-
-                item.get(
-                    "valorEstimadoItem",
-                    0
-                )
-
-            )
-
-
-            menor_preco = (
-
-                mercado.get(
-                    "menor_preco",
-                    {}
-                )
-
-                .get(
-                    "preco",
-                    0
-                )
-
-            )
-
-
-            economia = round(
-
-                valor_governo
-                -
-                menor_preco,
-
-                2
-
-            )
-
-
-            recomendacao = gerar_recomendacao(
-                economia
-            )
-
-
-            pregoes[pregao_id].append({
-
-                "item_id":
-                    item.get(
-                        "idCompraItem"
-                    ),
+            "itens":[{
 
                 "produto":
-                    produto,
 
-                "descricao":
-                    item.get(
-                        "descricaoDetalhadaItem"
-                    ),
-
-                "quantidade":
-                    item.get(
-                        "quantidadeItem"
-                    ),
+                produto,
 
                 "valor_governo":
-                    valor_governo,
+
+                valor_governo,
 
                 "mercado":
-                    mercado,
+
+                mercado,
 
                 "economia":
-                    economia,
+
+                economia,
 
                 "recomendacao":
-                    recomendacao
 
-            })
+                "Existe economia potencial"
 
+            }]
 
+        })
 
-        resultado = []
+    return{
 
+        "total_pregoes":
 
-        for pregao_id, itens in pregoes.items():
+        len(
+            pregoes
+        ),
 
-            categoria = classificar_pregao(
-                itens
-            )
+        "cidade":
 
+        cidade,
 
-            score = calcular_score(
+        "pregoes":
 
-                itens,
+        pregoes
 
-                categoria
-
-            )
-
-
-            resumo = gerar_resumo(
-
-                itens,
-
-                categoria
-
-            )
-
-
-            oportunidade = calcular_oportunidade(
-                itens
-            )
-
-
-            prioridade = (
-
-                "Alta"
-
-                if score >= 70
-
-                else
-
-                "Média"
-
-                if score >= 40
-
-                else
-
-                "Baixa"
-
-            )
-
-
-            if oportunidade == "Alta":
-
-                try:
-
-                    salvar_pregao({
-
-                        "pregao_id":
-                            pregao_id,
-
-                        "categoria":
-                            categoria,
-
-                        "score":
-                            score,
-
-                        "prioridade":
-                            prioridade,
-
-                        "oportunidade":
-                            oportunidade,
-
-                        "resumo":
-                            resumo
-
-                    })
-
-                except Exception as erro:
-
-                    print(
-                        "ERRO AO SALVAR:",
-                        erro
-                    )
-
-
-            resultado.append({
-
-                "pregao_id":
-                    pregao_id,
-
-                "categoria":
-                    categoria,
-
-                "score":
-                    score,
-
-                "prioridade":
-                    prioridade,
-
-                "oportunidade":
-                    oportunidade,
-
-                "resumo":
-                    resumo,
-
-                "quantidade_itens":
-                    len(
-                        itens
-                    ),
-
-                "itens":
-                    itens
-
-            })
-
-
-        resultado.sort(
-
-            key=lambda x:
-            x["score"],
-
-            reverse=True
-
-        )
-
-
-        return {
-
-            "total_pregoes":
-                len(
-                    resultado
-                ),
-
-            "pregoes":
-                resultado
-
-        }
-
-
-    except Exception as erro:
-
-        return {
-
-            "erro":
-                str(
-                    erro
-                )
-
-        }
+    }
