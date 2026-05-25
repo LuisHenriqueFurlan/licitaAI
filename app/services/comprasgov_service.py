@@ -32,7 +32,10 @@ from app.services.database_service import (
 
 
 
-def buscar_pregoes():
+def buscar_pregoes(
+        cidade=None,
+        uasg=None
+):
 
     try:
 

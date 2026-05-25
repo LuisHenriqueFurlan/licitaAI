@@ -1,10 +1,23 @@
 from fastapi import APIRouter
-from app.services.comprasgov_service import buscar_pregoes
+
+from app.services.comprasgov_service import (
+    buscar_pregoes
+)
 
 router = APIRouter()
 
 
 @router.get("/pregoes-governo")
-def consultar():
+def consultar(
 
-    return buscar_pregoes()
+    cidade: str = None,
+    uasg: int = None
+
+):
+
+    return buscar_pregoes(
+
+        cidade,
+        uasg
+
+    )
