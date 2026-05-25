@@ -20,7 +20,7 @@ from app.services.produto_service import (
 )
 
 from app.schemas.comparacao_schema import (
-    ComparacaoRequest
+    CompararProduto
 )
 
 from app.services.produto_service import (
@@ -68,7 +68,7 @@ def comparar(
 
 @router.post("/comparar-requisitos")
 def comparar_por_requisitos(
-    dados: ComparacaoRequest,
+    dados: CompararProduto,
     db: Session = Depends(get_db)
 ):
 

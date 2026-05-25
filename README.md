@@ -1,143 +1,113 @@
 # LicitaAI
 
-Sistema inteligente para análise e apoio à tomada de decisão em pregões públicos utilizando automação, Machine Learning e Inteligência Artificial.
+Sistema inteligente para análise de editais e recomendação automática de produtos utilizando Inteligência Artificial.
 
-## Objetivo
+O objetivo do projeto é automatizar parte do processo de leitura de editais, identificar requisitos técnicos e comparar com produtos cadastrados, gerando um ranking de compatibilidade.
 
-O LicitaAI está sendo desenvolvido para auxiliar empresas que participam de licitações públicas, automatizando tarefas que normalmente são feitas manualmente.
+---
 
-Futuras funcionalidades:
+## Funcionalidades atuais
 
-- Análise automática de editais
-- Extração de requisitos técnicos
-- Busca inteligente de produtos
-- Comparação de preços
-- Recomendações baseadas em IA
-- Predição de valores e estratégias de lance
-- Dashboard de acompanhamento
+✔ Upload de PDF de edital
+
+✔ Extração automática de texto
+
+✔ Identificação do produto solicitado
+
+✔ Extração de requisitos técnicos
+
+✔ Armazenamento em banco SQLite
+
+✔ Cadastro automático de atributos
+
+✔ Sistema de pesos para requisitos
+
+✔ Comparação de produtos
+
+✔ Ranking por compatibilidade
+
+✔ Interface React moderna
+
+✔ Integração preparada para OpenAI
 
 ---
 
 ## Tecnologias utilizadas
 
 ### Backend
+
 - Python
 - FastAPI
 - SQLAlchemy
 - SQLite
-- Pydantic
+- Uvicorn
+- OpenAI API (estrutura pronta)
+- PyPDF
 
-### Controle de versão
-- Git
-- GitHub
+### Frontend
 
-### Futuras tecnologias
-- PostgreSQL
-- OpenAI API
-- Scikit-Learn
-- Pandas
 - React
-- Docker
+- Vite
+- Axios
+- Lucide Icons
+- CSS
 
 ---
 
-## Estrutura atual do projeto
+## Estrutura do projeto
 
 ```txt
-LicitaAI/
+licitaAI/
 
-app/
+├── app/
+│   ├── database/
+│   ├── models/
+│   ├── routes/
+│   ├── schemas/
+│   ├── services/
+│   │
+│   ├── ia_service.py
+│   ├── comparacao_service.py
+│   ├── produto_service.py
+│   ├── prompts_service.py
 │
-├── database/
-│   ├── base.py
-│   ├── connection.py
-│   └── create_db.py
+├── frontend/
+│   ├── src/
+│   ├── public/
 │
-├── models/
-│   └── pregao.py
-│
-├── routes/
-│   ├── home.py
-│   └── pregoes.py
-│
-├── schemas/
-│   └── pregao_schema.py
-│
-├── services/
-│   └── pregoes_service.py
-│
-├── __init__.py
-│
-├── .env
-├── .gitignore
+├── licitaai.db
 ├── main.py
-└── licitaai.db
+├── .env
+└── README.md
 ```
 
 ---
 
-## Arquitetura utilizada
+## Como executar
 
-O projeto segue separação por responsabilidades:
-
-- **Routes**
-    - Recebem as requisições da API
-
-- **Services**
-    - Contêm a lógica de negócio
-
-- **Models**
-    - Representam as tabelas do banco
-
-- **Schemas**
-    - Validam dados recebidos
-
-- **Database**
-    - Gerenciam conexão e configuração do banco
-
----
-
-## Fluxo atual
-
-```txt
-Cliente
-   ↓
-FastAPI
-   ↓
-Pydantic (validação)
-   ↓
-Routes
-   ↓
-Services
-   ↓
-SQLAlchemy ORM
-   ↓
-SQLite
-```
-
----
-
-## Como executar o projeto
-
-### Clonar repositório
+### Clonar projeto
 
 ```bash
-git clone URL_DO_REPOSITORIO
+git clone https://github.com/SEU-USUARIO/licitaAI.git
 ```
 
-### Entrar na pasta
+Entrar na pasta:
 
 ```bash
-cd LicitaAI
+cd licitaAI
 ```
 
-### Criar ambiente virtual
+---
+
+## Backend
+
+Criar ambiente virtual:
 
 ```bash
 python -m venv venv
 ```
 
-### Ativar ambiente virtual
+Ativar:
 
 Windows:
 
@@ -145,35 +115,25 @@ Windows:
 venv\Scripts\activate
 ```
 
-Linux/Mac:
+Instalar dependências:
 
 ```bash
-source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-### Instalar dependências
-
-```bash
-pip install fastapi uvicorn sqlalchemy psycopg2-binary python-dotenv
-```
-
-### Criar banco
-
-```bash
-python -m app.database.create_db
-```
-
-### Executar aplicação
+Executar:
 
 ```bash
 uvicorn main:app --reload
 ```
 
----
+Servidor:
 
-## Documentação automática
+```txt
+http://localhost:8000
+```
 
-Após executar:
+Swagger:
 
 ```txt
 http://localhost:8000/docs
@@ -181,21 +141,81 @@ http://localhost:8000/docs
 
 ---
 
-## Funcionalidades implementadas
+## Frontend
 
-- Estrutura inicial do projeto
-- API com FastAPI
-- Banco de dados SQLite
-- ORM com SQLAlchemy
-- Validação com Pydantic
-- Cadastro de pregões
-- Consulta de pregões
-- Persistência de dados
+Entrar na pasta:
+
+```bash
+cd frontend
+```
+
+Instalar dependências:
+
+```bash
+npm install
+```
+
+Executar:
+
+```bash
+npm run dev
+```
+
+Frontend:
+
+```txt
+http://localhost:5173
+```
 
 ---
 
-## Status do projeto
+## Fluxo do sistema
 
-Em desenvolvimento 🚧
+1. Usuário envia PDF
 
-Projeto desenvolvido para aprendizado prático de Engenharia de Software, APIs, Banco de Dados, IA e Automação.
+2. Sistema extrai texto
+
+3. IA identifica requisitos técnicos
+
+4. Dados são salvos no banco
+
+5. Produtos são comparados
+
+6. Sistema gera ranking
+
+7. Resultado é exibido na interface
+
+---
+
+## Próximas etapas
+
+- Integração real com OpenAI
+- Histórico de análises
+- Dashboard
+- Login de usuários
+- Upload drag-and-drop
+- Exportar PDF
+- Busca automática de produtos online
+- Deploy
+
+---
+
+## Objetivo do projeto
+
+Projeto desenvolvido para estudo de:
+
+- Engenharia de Software
+- APIs REST
+- Inteligência Artificial
+- Machine Learning
+- Banco de dados
+- Arquitetura Backend
+- Desenvolvimento Full Stack
+
+---
+
+## Autor
+
+Luis Henrique Furlan
+
+Engenharia de Software

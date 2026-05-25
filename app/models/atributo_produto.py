@@ -1,12 +1,12 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy import ForeignKey
 from app.database.base import Base
 
 
 class AtributoProduto(Base):
 
-    __tablename__ = "atributos_produto"
+    __tablename__ = "atributos"
 
 
     id: Mapped[int] = mapped_column(
@@ -16,7 +16,7 @@ class AtributoProduto(Base):
 
 
     produto_id: Mapped[int] = mapped_column(
-        Integer
+         ForeignKey("produtos.id")
     )
 
 

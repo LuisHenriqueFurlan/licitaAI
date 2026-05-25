@@ -1,50 +1,36 @@
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-client = OpenAI(
-    api_key=os.getenv(
-        "OPENAI_API_KEY"
-    )
+from app.services.prompts_service import (
+    prompt_extracao_edital
 )
 
 
-def analisar_edital(texto):
+def analisar_edital_ia(
+    texto: str
+):
 
-    resposta = client.chat.completions.create(
+    prompt = prompt_extracao_edital()
 
-        model="gpt-4.1-mini",
-
-        messages=[
-
-            {
-                "role":"system",
-
-                "content": """
-Extraia requisitos técnicos do edital.
-
-Retorne APENAS JSON.
-
-Exemplo:
-
-{
-"produto":"",
-"processador":"",
-"ram":"",
-"ssd":"",
-"garantia":""
-}
-"""
-            },
-
-            {
-                "role":"user",
-                "content": texto[:3000]
-            }
-
-        ]
+    print(
+        "Prompt carregado"
     )
 
-    return resposta.choices[0].message.content
+    print(
+        prompt[:200]
+    )
+
+
+    # Simulação temporária
+    # Depois será OpenAI real
+
+    return {
+
+        "produto":"Notebook",
+
+        "requisitos":{
+
+            "RAM":"16GB",
+
+            "SSD":"512GB",
+
+            "Processador":"i5"
+        }
+    }

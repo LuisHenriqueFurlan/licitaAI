@@ -133,3 +133,40 @@ def comparar_requisitos(
 
 
     return produtos_validos
+
+def buscar_ou_criar_produto(
+    db: Session,
+    nome: str,
+    preco: int
+):
+
+    produto = db.query(
+        Produto
+    ).filter(
+        Produto.nome == nome
+    ).first()
+
+
+    if produto:
+
+        return produto
+
+
+    novo_produto = Produto(
+
+        nome=nome,
+        preco=preco
+    )
+
+
+    db.add(
+        novo_produto
+    )
+
+    db.commit()
+
+    db.refresh(
+        novo_produto
+    )
+
+    return novo_produto

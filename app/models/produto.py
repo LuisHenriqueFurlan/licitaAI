@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy.orm import relationship
 from app.database.base import Base
 
 
@@ -22,4 +22,9 @@ class Produto(Base):
 
     preco: Mapped[int] = mapped_column(
         Integer
+    )
+
+    atributos = relationship(
+    "AtributoProduto",
+    backref="produto"
     )

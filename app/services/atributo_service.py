@@ -12,6 +12,30 @@ def criar_atributo(
     valor: str
 ):
 
+    atributo_existente = db.query(
+        AtributoProduto
+    ).filter(
+
+        AtributoProduto.produto_id == produto_id,
+
+        AtributoProduto.nome == nome
+
+    ).first()
+
+
+    if atributo_existente:
+
+        atributo_existente.valor = valor
+
+        db.commit()
+
+        db.refresh(
+            atributo_existente
+        )
+
+        return atributo_existente
+
+
     novo_atributo = AtributoProduto(
 
         produto_id=produto_id,
@@ -34,6 +58,7 @@ def criar_atributo(
 
     return novo_atributo
 
+
 def listar_atributos(
     db: Session,
     produto_id: int
@@ -42,5 +67,7 @@ def listar_atributos(
     return db.query(
         AtributoProduto
     ).filter(
+
         AtributoProduto.produto_id == produto_id
+
     ).all()

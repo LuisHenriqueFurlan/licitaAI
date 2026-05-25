@@ -3,12 +3,33 @@ from sqlalchemy.orm import Session
 import tempfile
 
 from app.database.connection import get_db
-from app.services.edital_service import extrair_texto
-from app.services.ia_service import analisar_edital
-from app.services.analise_service import salvar_analise
+
+from app.services.edital_service import (
+    extrair_texto
+)
+
+from app.services.ia_service import (
+    analisar_edital_ia
+)
+
+from app.services.produto_service import (
+    buscar_ou_criar_produto
+)
+
+from app.services.atributo_service import (
+    criar_atributo
+)
+
 from app.services.analise_service import (
-    salvar_analise,
     listar_analises
+)
+
+from app.services.comparacao_service import (
+    comparar_produtos
+)
+
+from app.services.busca_produtos_service import (
+    buscar_produto
 )
 
 router = APIRouter()
@@ -37,20 +58,60 @@ async def enviar_edital(
     )
 
 
-    analise = analisar_edital(
+    dados = analisar_edital_ia(
         texto
     )
 
 
-    salvar_analise(
+    produtos_encontrados = buscar_produto(
+
+        dados["produto"]
+    )
+
+
+    for produto_externo in produtos_encontrados:
+
+        produto = buscar_ou_criar_produto(
+
+            db,
+
+            produto_externo["nome"],
+
+            produto_externo["preco"]
+        )
+
+
+        for nome, valor in produto_externo[
+            "atributos"
+        ].items():
+
+            criar_atributo(
+
+                db,
+
+                produto.id,
+
+                nome,
+
+                valor
+            )
+
+
+    ranking = comparar_produtos(
+
         db,
-        analise
+
+        dados["requisitos"]
     )
 
 
     return {
-        "analise": analise
+
+        "analise": dados,
+
+        "ranking": ranking
     }
+
 
 @router.get("/analises")
 def buscar_analises(
